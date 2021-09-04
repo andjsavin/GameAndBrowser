@@ -92,6 +92,8 @@ public class GameActivity extends AppCompatActivity {
             } else {
                 h.debuffs.replace("Bleed", h.debuffs.get("Bleed") - 1);
             }
+        } else {
+            bleed.setVisibility(View.GONE);
         }
         if (h.debuffs.get("Fire") != null) {
             fire.setVisibility(View.VISIBLE);
@@ -102,6 +104,8 @@ public class GameActivity extends AppCompatActivity {
             } else {
                 h.debuffs.replace("Fire", h.debuffs.get("Fire") - 1);
             }
+        } else {
+            fire.setVisibility(View.GONE);
         }
         if (h.debuffs.get("Stun") != null) {
             stun.setVisibility(View.VISIBLE);
@@ -111,6 +115,8 @@ public class GameActivity extends AppCompatActivity {
             } else {
                 h.debuffs.replace("Stun", h.debuffs.get("Stun") - 1);
             }
+        } else {
+            stun.setVisibility(View.GONE);
         }
         if (h.debuffs.get("Blind") != null) {
             blind.setVisibility(View.VISIBLE);
@@ -120,6 +126,8 @@ public class GameActivity extends AppCompatActivity {
             } else {
                 h.debuffs.replace("Blind", h.debuffs.get("Blind") - 1);
             }
+        } else {
+            blind.setVisibility(View.GONE);
         }
     }
     //handle turns
@@ -515,6 +523,7 @@ public class GameActivity extends AppCompatActivity {
                     turn = 0;
                     a2cooldown = 2;
                     specialCooldown = 4;
+                    debuffTick(goblin);
                 }
             }
         });
