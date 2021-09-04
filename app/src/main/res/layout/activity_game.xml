@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/boxInsetLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00FFFFFF"
+    tools:context=".GameActivity"
+    tools:deviceIds="wear">
+
+    <Button
+        android:id="@+id/butRog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="342dp"
+        android:layout_marginEnd="29dp"
+        android:layout_marginStart="37dp"
+        android:layout_marginTop="342dp"
+        android:text="Rogue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/butWar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/butWar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="342dp"
+        android:layout_marginTop="342dp"
+        android:text="Warrior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/butMage"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/butRog"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/butMage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="342dp"
+        android:layout_marginEnd="37dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="342dp"
+        android:text="Mage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/butWar"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:src="@drawable/forest_bg" />
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/enemy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="214dp"
+        android:layout_marginEnd="283dp"
+        android:src="@drawable/goblin"
+        app:layout_constraintBottom_toTopOf="@+id/butRog"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/bleedDebuff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="75dp"
+        android:layout_marginTop="125dp"
+        android:src="@drawable/bleed"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/enemy"
+        app:layout_constraintEnd_toEndOf="@id/enemy"
+        app:layout_constraintStart_toStartOf="@id/enemy"
+        app:layout_constraintTop_toTopOf="@id/enemy" />
+
+    <ImageView
+        android:id="@+id/blindDebuff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="25dp"
+        android:layout_marginTop="125dp"
+        android:src="@drawable/blind"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/enemy"
+        app:layout_constraintEnd_toEndOf="@id/enemy"
+        app:layout_constraintStart_toStartOf="@id/enemy"
+        app:layout_constraintTop_toTopOf="@id/enemy" />
+
+    <ImageView
+        android:id="@+id/onfireDebuff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="125dp"
+        android:src="@drawable/fire"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/enemy"
+        app:layout_constraintEnd_toEndOf="@id/enemy"
+        app:layout_constraintStart_toStartOf="@id/enemy"
+        app:layout_constraintTop_toTopOf="@id/enemy" />
+
+    <ImageView
+        android:id="@+id/stunDebuff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="75dp"
+        android:layout_marginTop="125dp"
+        android:src="@drawable/stun"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/enemy"
+        app:layout_constraintEnd_toEndOf="@id/enemy"
+        app:layout_constraintStart_toStartOf="@id/enemy"
+        app:layout_constraintTop_toTopOf="@id/enemy" />
+
+    <ImageView
+        android:id="@+id/imgHero"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="283dp"
+        android:layout_marginTop="213dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/butMage"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <ProgressBar
+        android:id="@+id/gobHP"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="199dp"
+        android:layout_height="16dp"
+        android:layout_marginBottom="260dp"
+        android:layout_marginEnd="37dp"
+        android:layout_marginStart="47dp"
+        android:layout_marginTop="15dp"
+        android:progressTint="#F44336"
+        app:layout_constraintBottom_toTopOf="@+id/butMage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/enemy"
+        app:layout_constraintTop_toBottomOf="@+id/enemyName" />
+
+    <ProgressBar
+        android:id="@+id/heroHP"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="199dp"
+        android:layout_height="16dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="47dp"
+        android:layout_marginStart="37dp"
+        android:layout_marginTop="219dp"
+        android:progressTint="#4CAF50"
+        app:layout_constraintBottom_toTopOf="@+id/heroName"
+        app:layout_constraintEnd_toStartOf="@+id/imgHero"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/butRog" />
+
+    <TextView
+        android:id="@+id/hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="250dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:text=""
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/enemyName"
+        android:layout_width="144dp"
+        android:layout_height="47dp"
+        android:layout_marginBottom="25dp"
+        android:layout_marginEnd="65dp"
+        android:layout_marginStart="73dp"
+        android:layout_marginTop="35dp"
+        android:background="#00FFFFFF"
+        android:text="Goblin"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toTopOf="@+id/gobHP"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/enemy"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/heroName"
+        android:layout_width="144dp"
+        android:layout_height="47dp"
+        android:layout_marginBottom="35dp"
+        android:layout_marginEnd="73dp"
+        android:layout_marginStart="65dp"
+        android:layout_marginTop="25dp"
+        android:background="#00FFFFFF"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imgHero"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/heroHP" />
+</androidx.constraintlayout.widget.ConstraintLayout>
