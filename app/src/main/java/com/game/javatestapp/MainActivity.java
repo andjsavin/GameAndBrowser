@@ -8,10 +8,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -23,9 +26,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -39,13 +46,34 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.Manifest;
 import com.facebook.FacebookSdk;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.onesignal.OneSignal;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
     /*-- CUSTOMIZE --*/
@@ -66,6 +94,44 @@ public class MainActivity extends AppCompatActivity {
 
     private final static int file_req_code = 1;
 
+    //httpclient requester
+    public class GetExample {
+        final OkHttpClient client = new OkHttpClient();
+
+        String run(String url) throws IOException {
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                return response.body().string();
+            }
+        }
+    }
+    //get IP from ipify.org and location from ipstack.com
+    public String getIP() throws IOException {
+        String apiKey = "80e72e43af3b4d45eea34946c15d29ab";
+        GetExample example = new GetExample();
+        String response = example.run("http://api.ipstack.com/" + example.run("https://api.ipify.org") + "?access_key=80e72e43af3b4d45eea34946c15d29ab");
+        return response;
+    }
+
+    class AsyncRequest extends AsyncTask<String, String, String>{
+        private Exception exception;
+        @Override
+        protected String doInBackground(String ...arg) {
+            try {
+                return getIP();
+            } catch (Exception e) {
+                this.exception = e;
+                return "";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String v) {
+        }
+    }
     private boolean checkFirstRun() {
         ConnectivityManager cm = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo nInfo = cm.getActiveNetworkInfo();
@@ -75,34 +141,19 @@ public class MainActivity extends AppCompatActivity {
         final String PREF_LOCALE = "Locale";
         final String PREF_INTERNET = "Connected";
         final int DOESNT_EXIST = -1;
-
         // Get current version code
         int currentVersionCode = BuildConfig.VERSION_CODE;
-
         // Get saved version code
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int savedVersionCode = prefs.getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
-
         // Check for first run or upgrade
         if (currentVersionCode == savedVersionCode) {
-            checkLocale = prefs.getString(PREF_LOCALE, checkLocale);
             checkInternet = prefs.getBoolean(PREF_INTERNET, checkInternet);
             return false;
 
-        } else if (savedVersionCode == DOESNT_EXIST) {
-            checkLocale = this.getResources().getConfiguration().locale.getCountry();
-            checkInternet = nInfo != null && nInfo.isAvailable() && nInfo.isConnected();
-            // TODO This is a new install (or the user cleared the shared preferences)
-
-        } else if (currentVersionCode > savedVersionCode) {
-            checkLocale = this.getResources().getConfiguration().locale.getCountry();
-            checkInternet = nInfo != null && nInfo.isAvailable() && nInfo.isConnected();
-            // TODO This is an upgrade
         }
-
-        // Update the shared preferences with first start data
+        checkInternet = nInfo != null && nInfo.isAvailable() && nInfo.isConnected();
         prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
-        prefs.edit().putString(PREF_LOCALE, checkLocale).apply();
         prefs.edit().putBoolean(PREF_INTERNET, checkInternet).apply();
         return true;
     }
@@ -170,9 +221,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //check if it's first time
-        boolean firstTime = checkFirstRun();
+        boolean first = checkFirstRun();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (checkInternet && first) {
+            AsyncRequest req = new AsyncRequest();
+            req.execute();
+            try {
+                checkLocale = req.get();
+            } catch (ExecutionException e) {
+                checkLocale = "";
+            } catch (InterruptedException e) {
+                checkLocale = "";
+            }
+            //parse JSON string to json
+            JsonObject geo = new JsonParser().parse(checkLocale).getAsJsonObject();
+            //get coutnry_code from geo if internet is up
+            checkLocale = geo.get("country_code").toString().replace("\"", "");
+            //else get from device locale
+        } else {
+            checkLocale = this.getResources().getConfiguration().locale.getCountry();
+        }
         //if connection is up and country is UA or PL
         if ((checkInternet) && (checkLocale.equals("UA") || checkLocale.equals("PL"))) {
             webView = findViewById(R.id.webView);
