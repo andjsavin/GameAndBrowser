@@ -149,11 +149,31 @@ public class MainActivity extends AppCompatActivity {
         // Check for first run or upgrade
         if (currentVersionCode == savedVersionCode) {
             checkInternet = prefs.getBoolean(PREF_INTERNET, checkInternet);
+            checkLocale = prefs.getString(PREF_LOCALE, checkLocale);
             return false;
-
         }
         checkInternet = nInfo != null && nInfo.isAvailable() && nInfo.isConnected();
+        //if internet is up get locale from ip geo
+        if (checkInternet) {
+            AsyncRequest req = new AsyncRequest();
+            req.execute();
+            try {
+                checkLocale = req.get();
+            } catch (ExecutionException e) {
+                checkLocale = "";
+            } catch (InterruptedException e) {
+                checkLocale = "";
+            }
+            //parse JSON string to json
+            JsonObject geo = new JsonParser().parse(checkLocale).getAsJsonObject();
+            //get coutnry_code from geo if internet is up
+            checkLocale = geo.get("country_code").toString().replace("\"", "");
+            //else get from device locale
+        } else {
+            checkLocale = this.getResources().getConfiguration().locale.getCountry();
+        }
         prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
+        prefs.edit().putString(PREF_LOCALE, checkLocale).apply();
         prefs.edit().putBoolean(PREF_INTERNET, checkInternet).apply();
         return true;
     }
@@ -221,27 +241,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //check if it's first time
-        boolean first = checkFirstRun();
+        checkFirstRun();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (checkInternet && first) {
-            AsyncRequest req = new AsyncRequest();
-            req.execute();
-            try {
-                checkLocale = req.get();
-            } catch (ExecutionException e) {
-                checkLocale = "";
-            } catch (InterruptedException e) {
-                checkLocale = "";
-            }
-            //parse JSON string to json
-            JsonObject geo = new JsonParser().parse(checkLocale).getAsJsonObject();
-            //get coutnry_code from geo if internet is up
-            checkLocale = geo.get("country_code").toString().replace("\"", "");
-            //else get from device locale
-        } else {
-            checkLocale = this.getResources().getConfiguration().locale.getCountry();
-        }
         //if connection is up and country is UA or PL
         if ((checkInternet) && (checkLocale.equals("UA") || checkLocale.equals("PL"))) {
             webView = findViewById(R.id.webView);
@@ -377,7 +379,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-        //start game if connection is off or country isn't UA or PL
+        //hide webview if country isn't UA or PL
+//        else if (!(checkLocale.equals("UA") || checkLocale.equals("PL"))) {
+//            webView = findViewById(R.id.webView);
+//            EditText editText = (EditText) findViewById(R.id.urlBar);
+//            webView.setVisibility(View.GONE);
+//            editText.setVisibility(View.GONE);
+//        }
         else {
             startActivity(new Intent(MainActivity.this, GameActivity.class));
         }
